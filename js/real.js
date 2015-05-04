@@ -6,8 +6,8 @@
 var brainData = (function() {
     //Brain zones
     //var brainZones = ['AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'EXCITE-S', 'MEDIT', 'FRUST', 'BORED', 'TYPE', 'INTENSITY'];
-    //var brainZones = ['TYPE', 'INTENSITY', 'ENGAGE', 'EXCITE-S', 'MEDIT', 'FRUST', 'AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4'];
-    var brainZones = ['TYPE', 'INTENSITY', 'EXCITEMENT', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1'];
+    var brainZones = ['TYPE', 'ENTHRALMENT', 'ENGAGE', 'EXCITE-S', 'MEDIT', 'FRUST', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1'];
+    //var brainZones = ['TYPE', 'INTENSITY', 'ENTHRALMENT', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1'];
 
     var brainTextData = [];
     var brainRecord = {};
@@ -110,7 +110,8 @@ Future.prototype.init = function(container) {
     */
 
     //Connect to server
-    connectionManager.connect();
+    var url = "127.0.0.1", defaultPort = 80;
+    connectionManager.connect(url);
 
     BaseApp.prototype.init.call(this, container);
 
@@ -223,7 +224,7 @@ Future.prototype.createScene = function() {
     for(var i=0; i<numZones; ++i) {
         sphere = new THREE.SphereGeometry(5, 8, 8);
         //sphereMat = this.glowRedMat;
-        sphereMat = new THREE.MeshPhongMaterial( {color: 0xfcd576});
+        sphereMat = new THREE.MeshPhongMaterial( {color: 0xe7772b});
         sphereMesh = new THREE.Mesh(sphere, sphereMat);
         sphereMesh.scale.multiplyScalar(this.sphereScale);
         sphereMesh.name = brainData.getZoneName(i);
@@ -253,18 +254,9 @@ Future.prototype.createScene = function() {
         })
     } );
 
-    //DEBUG
-
-    var sphereGeom = new THREE.SphereGeometry(100, 32, 32);
-    var sphereMat = new THREE.MeshBasicMaterial( {color: 0x0000ff});
-    var sphere = new THREE.Mesh(sphereGeom, sphereMat);
-    sphere.visible = false;
-    sphere.name = 'testSphere';
-    this.scene.add(sphere);
-
-
     //Create layout
-    canvasManager.setCanvasSize(window.innerWidth, window.innerHeight);
+    var canvasHeightScale = 0.9;
+    canvasManager.setCanvasSize(window.innerWidth, window.innerHeight * canvasHeightScale);
 
     //var pos = createLayout();
 
@@ -273,7 +265,8 @@ Future.prototype.createScene = function() {
     //var rot = [ -130, -110, -90, -70, -50, -30, -10, 10, 30, 50, 70, 90, 110, 130, 150, 170, -170, -150];
     var rot = [ 150, 170, -170, -150, -130, -110, -90, -70, -50, -30, -10, 10, 30, 50, 70, 90, 110, 130];
 
-    canvasManager.createCanvas('meter', 0, 0, 0);
+    var canvasTopPercent = ((1-canvasHeightScale)/2)*100;
+    canvasManager.createCanvas('meter', canvasTopPercent, 0, 0);
     barManager.createBars('meter');
     barManager.setTextDescription(brainData.getBrainZones());
 
@@ -294,9 +287,10 @@ Future.prototype.createGUI = function() {
         this.GlowOpacity = 0.7;
         this.RotateSpeed = 0.002;
         this.SinewaveData = false;
-        this.RandomData = true;
-        this.NeuroData = false;
-        this.TestSphere = false;
+        this.RandomData = false;
+        this.NeuroData = true;
+        this.ip = "127.0.0.1";
+        this.port = 80;
         //Light Pos
         this.LightX = 200;
         this.LightY = 200;
@@ -350,11 +344,12 @@ Future.prototype.createGUI = function() {
     });
     NeuroData.listen();
 
-    this.gui.add(this.guiControls, 'TestSphere', false).onChange(function(value) {
-        var sphere = _this.scene.getObjectByName('testSphere', true);
-        if(sphere) {
-            sphere.visible = value;
-        }
+    this.gui.add(this.guiControls, 'ip').onChange(function(value) {
+        _this.onChangeIP(value);
+    });
+
+    this.gui.add(this.guiControls, 'port').onChange(function(value) {
+        _this.onChangePort(value);
     });
 
     this.lightPos = this.gui.addFolder('LightPos');
@@ -395,9 +390,21 @@ Future.prototype.onGlowOpacity = function(value) {
     }
 };
 
+Future.prototype.onChangeIP = function(ip) {
+    //Connect to new ip address
+    connectionManager.close();
+    connectionManager.connect(ip, this.guiControls.port);
+};
+
+Future.prototype.onChangePort = function(port) {
+    //Connect to new port
+    connectionManager.close();
+    connectionManager.connect(this.guiControls.ip, port);
+};
+
 Future.prototype.changeLightPos = function(value, axis) {
     //Change light pos
-    var light = this.scene.getObjectByName('PointLight', true);
+    var light = this.scene.getObjectByName('PointLight', true);h
     var box = this.scene.getObjectByName('lightBox', true);
     if(!light || !box) {
         console.log('No light or light box');
@@ -561,7 +568,7 @@ Future.prototype.update = function() {
     //if(this.brainTime >= this.updateTime) {
         //this.brainTime = 0;
     //DEBUG
-        //this.requestData();
+        this.requestData();
     //}
 
     BaseApp.prototype.update.call(this);
@@ -617,9 +624,6 @@ Future.prototype.normaliseData = function(data) {
 Future.prototype.requestData = function() {
     if(connectionManager.getConnectionStatus() === CONNECTED) {
         connectionManager.requestData();
-    } else {
-        //See if we need to try and reconnect
-        connectionManager.connect();
     }
 };
 

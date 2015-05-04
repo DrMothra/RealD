@@ -10,8 +10,11 @@ var connectionManager = (function() {
     var currentStatusHandler = null;
     var currentConnectHandler = null;
     var requestHandler = null;
-    var currentURL = "ws://127.0.0.1";
+    var defaultURL = "ws://127.0.0.1";
+    var defaultPort = 80;
     var socket;
+    var _this = this;
+    var reconnectTimerId = null;
 
     var defaultStatusHandler = function() {
         console.log('Default status handler');
@@ -52,13 +55,17 @@ var connectionManager = (function() {
             return status;
         },
 
-        connect: function(statusHandler, connectHandler) {
+        connect: function(url, port, statusHandler, connectHandler) {
             if(status === CONNECTING || status === CONNECTED) return;
             currentStatusHandler = (statusHandler != undefined) ? statusHandler : defaultStatusHandler;
             currentConnectHandler = (connectHandler != undefined) ? connectHandler : defaultConnectHandler;
 
             status = CONNECTING;
-            socket = new WebSocket(currentURL);
+            //Construct url + port;
+            var currentUrl = url != undefined ? 'ws://' + url : defaultURL;
+            var currentPort = port != undefined ? port : defaultPort;
+            currentUrl += ':' + currentPort;
+            socket = new WebSocket(currentUrl);
             socket.onopen = function() {
                 console.log('Socket opened');
                 currentConnectHandler();
@@ -76,6 +83,12 @@ var connectionManager = (function() {
             };
         },
 
+        reconnect: function(url, port) {
+            var currentUrl = url != undefined ? 'ws://' + url : defaultURL;
+            var currentPort = port != undefined ? port : defaultPort;
+            //DEBUG
+            //reconnectTimerId = setInterval(_this.connect(url, port), 5000);
+        },
         requestData: function() {
             var args = getArgumentObject('GetState');
             sendRequest(args);
@@ -88,6 +101,11 @@ var connectionManager = (function() {
             } else {
                 return null;
             }
+        },
+
+        close: function() {
+            status = IDLE;
+            socket.close();
         }
     }
 })();

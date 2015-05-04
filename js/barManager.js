@@ -75,10 +75,10 @@ var barManager = (function() {
                 return;
             }
 
-            //level *= 10;
-
             var i;
             var dataValue;
+            var startChannel = 1, startDataChannel = 13, maxChannels = data.length;
+            var startTextDescriptor = 1, dataTextDescriptor = 6;
             var canvas = canvasList[barNumber];
             var ctx = canvas.ctx;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -88,9 +88,9 @@ var barManager = (function() {
             ctx.rotate(degreesToRads(startRot));
 
             //Draw main ticks separately
-            var textDescriptor = 2;
-            var barNumber = 0;
-            //Draw excitement first
+            //Draw enthralment first
+            var text = textLabels[startTextDescriptor] + " ";
+
             ctx.strokeStyle = ORANGE;
             ctx.beginPath();
             ctx.moveTo(canvas.xStart, -radius);
@@ -99,14 +99,18 @@ var barManager = (function() {
             ctx.arc(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.2), 5,0, Math.PI*2, false);
             ctx.stroke();
             ctx.save();
-            ctx.rotate(degreesToRads(barAngleDeg*3.5));
-            ctx.fillText(textLabels[textDescriptor], canvas.xStart-20, -radius + canvas.barLength + (canvas.barLength *0.2));
+            //Curve text
+            for(var i= 0, len=text.length/2; i<len; ++i) {
+                ctx.rotate(degreesToRads(barAngleDeg));
+                ctx.fillText(text.substr(i*2, 2), canvas.xStart+2+(i*5), -radius + canvas.barLength + (canvas.barLength *0.2));
+            }
             ctx.restore();
-            ++textDescriptor;
             ctx.closePath();
             ctx.rotate(degreesToRads(barAngleDeg));
+            //Ignore next 5 channels
+            var textDescriptor = dataTextDescriptor;
             numLevels = 47;
-            dataValue = data[2]*numLevels;
+            dataValue = data[startChannel]*numLevels;
             for(var bar=0; bar<numLevels; ++bar) {
                 ctx.strokeStyle = offColour;
                 if(dataValue >= bar) {
@@ -133,10 +137,6 @@ var barManager = (function() {
                     ctx.stroke();
                     //Draw text separately
                     if(textLabels[textDescriptor].length >= 4) {
-                        //Exception for "Excitement"
-                        if(textLabels[textDescriptor].indexOf("EXCITE") >= 0) {
-                            continue;
-                        }
                         ctx.save();
                         ctx.rotate(degreesToRads(barAngleDeg*3.5));
                         ctx.fillText(textLabels[textDescriptor], canvas.xStart-20, -radius + canvas.barLength + (canvas.barLength *0.2));
@@ -148,7 +148,10 @@ var barManager = (function() {
                     ctx.closePath();
                     ctx.rotate(degreesToRads(barAngleDeg));
                 }
-                dataValue = data[i+3]*numLevels;
+                if((startDataChannel+i) >= maxChannels) {
+                    startDataChannel = -1;
+                }
+                dataValue = data[startDataChannel+i]*numLevels;
                 for(var bar=0; bar<numLevels; ++bar) {
                     ctx.strokeStyle = offColour;
                     if(dataValue >= bar) {
