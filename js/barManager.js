@@ -44,10 +44,8 @@ var barManager = (function() {
             ctx.strokeStyle = offColour;
             ctx.lineWidth = lineWidth;
             //Text styles
-            ctx.fontFamily = '12px "eurostileregular"';
-            //ctx.fontFamily = '12px bold "Arial"';
-            //ctx.font = '12px Times';
-            ctx.fillStyle = WHITE;
+            ctx.font = '16px "eurostileregular"';
+            ctx.fillStyle = ORANGE;
             var canvasItem = {};
             canvasItem.element = element;
             canvasItem.width = c.width;
@@ -89,20 +87,20 @@ var barManager = (function() {
 
             //Draw main ticks separately
             //Draw enthralment first
-            var text = textLabels[startTextDescriptor] + " ";
+            var text = textLabels[startTextDescriptor];
 
             ctx.strokeStyle = ORANGE;
             ctx.beginPath();
             ctx.moveTo(canvas.xStart, -radius);
-            ctx.lineTo(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.2));
+            ctx.lineTo(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.4));
             //ctx.stroke();
-            ctx.arc(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.2), 5,0, Math.PI*2, false);
+            ctx.arc(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.4), 5,0, Math.PI*2, false);
             ctx.stroke();
             ctx.save();
             //Curve text
-            for(var i= 0, len=text.length/2; i<len; ++i) {
+            for(var i= 0, len=text.length/2; i<=len; ++i) {
                 ctx.rotate(degreesToRads(barAngleDeg));
-                ctx.fillText(text.substr(i*2, 2), canvas.xStart+2+(i*5), -radius + canvas.barLength + (canvas.barLength *0.2));
+                ctx.fillText(text.substr(i*2, 2), canvas.xStart+2+(i*10), -radius + canvas.barLength + (canvas.barLength *0.3));
             }
             ctx.restore();
             ctx.closePath();
@@ -131,18 +129,18 @@ var barManager = (function() {
                     ctx.strokeStyle = ORANGE;
                     ctx.beginPath();
                     ctx.moveTo(canvas.xStart, -radius);
-                    ctx.lineTo(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.2));
+                    ctx.lineTo(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.4));
                     //ctx.stroke();
-                    ctx.arc(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.2), 5,0, Math.PI*2, false);
+                    ctx.arc(canvas.xStart, -radius + canvas.barLength + (canvas.barLength *0.4), 5,0, Math.PI*2, false);
                     ctx.stroke();
                     //Draw text separately
                     if(textLabels[textDescriptor].length >= 4) {
                         ctx.save();
                         ctx.rotate(degreesToRads(barAngleDeg*3.5));
-                        ctx.fillText(textLabels[textDescriptor], canvas.xStart-20, -radius + canvas.barLength + (canvas.barLength *0.2));
+                        ctx.fillText(textLabels[textDescriptor], canvas.xStart-20, -radius + canvas.barLength + (canvas.barLength *0.3));
                         ctx.restore();
                     } else {
-                        ctx.fillText(textLabels[textDescriptor], canvas.xStart + textXOffset, -radius + canvas.barLength + (canvas.barLength *0.2));
+                        ctx.fillText(textLabels[textDescriptor], canvas.xStart + textXOffset, -radius + canvas.barLength + (canvas.barLength *0.3));
                     }
                     ++textDescriptor;
                     ctx.closePath();

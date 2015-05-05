@@ -58,11 +58,21 @@ body {
     border-radius: 15px;
     background: #444444;
 }
-.logos {
+.logosLeft,
+.logosRight {
     position: absolute;
-    right: -12%;
-    bottom: 5%;
+    bottom: 2.5%;
 }
-.logos img {
-    width: 40%;
+.logosLeft {
+    left: 15%;
+}
+.logosRight {
+    right: 12.5%;
+    text-align: right;
+}
+.logosLeft img {
+    width: 30%;
+}
+.logosRight img {
+    width: 30%;
 }

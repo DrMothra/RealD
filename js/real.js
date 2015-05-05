@@ -6,7 +6,7 @@
 var brainData = (function() {
     //Brain zones
     //var brainZones = ['AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'EXCITE-S', 'MEDIT', 'FRUST', 'BORED', 'TYPE', 'INTENSITY'];
-    var brainZones = ['TYPE', 'ENTHRALMENT', 'ENGAGE', 'EXCITE-S', 'MEDIT', 'FRUST', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1'];
+    var brainZones = ['TYPE', 'ENTHRAL', 'ENGAGE', 'EXCITE-S', 'MEDIT', 'FRUST', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1'];
     //var brainZones = ['TYPE', 'INTENSITY', 'ENTHRALMENT', 'O2', 'P8', 'T8', 'FC6', 'F4', 'F8', 'AF4', 'AF3', 'F7', 'F3', 'FC5', 'T7', 'P7', 'O1'];
 
     var brainTextData = [];
@@ -40,8 +40,8 @@ var brainData = (function() {
 
 //Init this app from base
 var RANDOM_FIRE_TIME = 0.1;
-var ALPHA_TRANSITION_TIME = 20;
-var ALPHA_STEADY_TIME = 10;
+var ALPHA_TRANSITION_TIME = 12;
+var ALPHA_STEADY_TIME = 1;
 //Alpha states
 var DOWN=0, OFF=1, UP=2, ON=3;
 
@@ -285,7 +285,7 @@ Future.prototype.createGUI = function() {
         this.BrainOpacity = 0.25;
         this.CycleOpacity = true;
         this.GlowOpacity = 0.7;
-        this.RotateSpeed = 0.002;
+        this.RotateSpeed = 0.005;
         this.SinewaveData = false;
         this.RandomData = false;
         this.NeuroData = true;
@@ -445,7 +445,7 @@ Future.prototype.update = function() {
         if(this.data != null && this.data != 'No Data') {
             this.data = JSON.parse(this.data);
             this.dataValues = this.data.data[0][1];
-            //Normalise these values
+            //Normalise these valuesc
             this.normaliseData(this.dataValues);
             //Ignore first 2 values
             //DEBUG
